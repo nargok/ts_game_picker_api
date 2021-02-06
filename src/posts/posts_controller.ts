@@ -17,6 +17,7 @@ class PostsController {
     this.router.get(this.path, this.getAllPosts)
     this.router.get(`${this.path}/:id`, this.getPostById)
     this.router.post(this.path, this.createPost)
+    this.router.put(`${this.path}/:id`, this.modifyPost)
   }
 
   private getAllPosts = async (request: express.Request, response: express.Response) => {
@@ -39,6 +40,18 @@ class PostsController {
     const newPost = this.postRepository.create(postData)
     await this.postRepository.save(newPost)
     response.send(newPost)
+  }
+
+  private modifyPost = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    const id = request.params.id
+    const postData: CreatePostDto = request.body
+    await this.postRepository.update(id, postData)
+    const updatedPost = await this.postRepository.findOne(id)
+    if (updatedPost) {
+      response.send(updatedPost)
+    } else {
+      next(new PostNotFoundException(id));
+    }
   }
 }
 
