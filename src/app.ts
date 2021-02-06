@@ -2,19 +2,37 @@ import express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import HttpException from './exceptions/HttpException';
 
-const app = express();
+class App {
+  public app: express.Application;
+  public port: number;
 
-// middleware
-app.use(express.json());
-app.use((err: HttpException, req: Request, res: Response, next: NextFunction) => {
-  console.log(err)
-  res.status(err.statusCode || 500).json({ error: err.message })
-})
+  constructor(controllers: any, port: number) {
+    this.app = express();
+    this.port = port;
 
-// routing
-const router = require('./routes/')
-app.use('/', router);
+    this.initializeMiddleware();
+    this.initializeControllers(controllers)
+  }
 
-const port = process.env.PORT || 3000;
-app.listen(port);
-console.log('listening on port' + port);
+  private initializeMiddleware() {
+    this.app.use(express.json())
+    this.app.use((err: HttpException, req: Request, res: Response, next: NextFunction) => {
+      console.log(err)
+      res.status(err.statusCode || 500).json({ error: err.message })
+    })
+  }
+
+  private initializeControllers(controllers: Array<any>) {
+    controllers.forEach((controller: { router: any; }) => {
+      this.app.use('/', controller.router)
+    })
+  }
+
+  public listen() {
+    this.app.listen(this.port, () => {
+      console.log(`App listening on port ${this.port}`)
+    })
+  }
+}
+
+export default App
