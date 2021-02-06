@@ -5,8 +5,6 @@ import App from './app'
 import config from './ormconfig'
 import PostController from './posts/posts_controller'
 
-
-
 (async () => {
   try {
     const connections = await createConnection(config)

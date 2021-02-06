@@ -18,6 +18,7 @@ class PostsController {
     this.router.get(`${this.path}/:id`, this.getPostById)
     this.router.post(this.path, this.createPost)
     this.router.put(`${this.path}/:id`, this.modifyPost)
+    this.router.delete(`${this.path}/:id`, this.deletePost)
   }
 
   private getAllPosts = async (request: express.Request, response: express.Response) => {
@@ -49,6 +50,16 @@ class PostsController {
     const updatedPost = await this.postRepository.findOne(id)
     if (updatedPost) {
       response.send(updatedPost)
+    } else {
+      next(new PostNotFoundException(id));
+    }
+  }
+  
+  private deletePost = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    const id = request.params.id
+    const deleteResponse = await this.postRepository.delete(id)
+    if (deleteResponse.affected === 1) {
+      response.sendStatus(200)
     } else {
       next(new PostNotFoundException(id));
     }
