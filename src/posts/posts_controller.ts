@@ -1,8 +1,8 @@
 import * as express from 'express'
 import { getRepository } from 'typeorm'
-// import Post from './post.interface'
 import Post from './post.entity'
 import CreatePostDto from './post.dto'
+import PostNotFoundException from '../exceptions/PostNotFoundException'
 
 class PostsController {
   public path = '/posts'
@@ -15,12 +15,23 @@ class PostsController {
 
   public initializeRoutes() {
     this.router.get(this.path, this.getAllPosts)
+    this.router.get(`${this.path}/:id`, this.getPostById)
     this.router.post(this.path, this.createPost)
   }
 
   private getAllPosts = async (request: express.Request, response: express.Response) => {
     const posts = await this.postRepository.find();
     response.send(posts)
+  }
+
+  private getPostById = async(request: express.Request, response: express.Response, next: express.NextFunction)  => {
+    const id = request.params.id
+    const post = await this.postRepository.findOne(id)
+    if (post) {
+      response.send(post)
+    } else {
+      next(new PostNotFoundException(id));
+    }
   }
 
   private createPost = async (request: express.Request, response: express.Response) => {
