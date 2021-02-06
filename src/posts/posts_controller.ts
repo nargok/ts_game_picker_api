@@ -3,8 +3,9 @@ import { getRepository } from 'typeorm'
 import Post from './post.entity'
 import CreatePostDto from './post.dto'
 import PostNotFoundException from '../exceptions/PostNotFoundException'
+import Controller from '../interfaces/controller.interface'
 
-class PostsController {
+class PostsController implements Controller {
   public path = '/posts'
   public router = express.Router()
   private postRepository = getRepository(Post)
