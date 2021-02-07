@@ -1,19 +1,16 @@
 import * as express from 'express'
 import { getRepository } from 'typeorm'
-import Post from './post.entity'
 import CreatePostDto from './post.dto'
 import PostNotFoundException from '../exceptions/PostNotFoundException'
 import Controller from '../interfaces/controller.interface'
-
-// TODO 後で型定義する
-interface RequestWithUser extends express.Request {
-  user: any
-}
+import Post from './post.interface'
+import PostModel from './post.entity'
+import RequestWithUser from '../interfaces/requestWithUser.interface'
 
 class PostsController implements Controller {
   public path = '/posts'
   public router = express.Router()
-  private postRepository = getRepository(Post)
+  private postRepository = getRepository(PostModel)
 
   constructor() {
     this.initializeRoutes()
@@ -43,22 +40,21 @@ class PostsController implements Controller {
   }
 
   private createPost = async (request: RequestWithUser, response: express.Response) => {
+  // private createPost = async (request: express.Request, response: express.Response) => {
     const postData: CreatePostDto = request.body
     const newPost = this.postRepository.create({
       ...postData,
       author: request.user,
     })
     await this.postRepository.save(newPost)
+    // newPost.author = undefined;
     response.send(newPost)
   }
 
-  private modifyPost = async (request: RequestWithUser, response: express.Response, next: express.NextFunction) => {
+  private modifyPost = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     const id = request.params.id
-    const postData: CreatePostDto = request.body
-    await this.postRepository.update(id, {
-      ...postData,
-      author: request.user
-    })
+    const postData: Post = request.body
+    await this.postRepository.update(id, postData)
     const updatedPost = await this.postRepository.findOne(id)
     if (updatedPost) {
       response.send(updatedPost)
