@@ -1,6 +1,5 @@
 import express from 'express';
-import { NextFunction, Request, Response } from 'express';
-import HttpException from './exceptions/HttpException';
+import errorMiddleware from './middleware/error.middleware'
 import cookieParser from 'cookie-parser';
 
 class App {
@@ -12,16 +11,17 @@ class App {
     this.port = port;
 
     this.initializeMiddleware();
-    this.initializeControllers(controllers)
+    this.initializeControllers(controllers);
+    this.initializeErrorHandling();
   }
 
   private initializeMiddleware() {
     this.app.use(express.json())
     this.app.use(cookieParser())
-    this.app.use((err: HttpException, req: Request, res: Response, next: NextFunction) => {
-      console.log(err)
-      res.status(err.statusCode || 500).json({ error: err.message })
-    })
+  }
+
+  private initializeErrorHandling() {
+    this.app.use(errorMiddleware);
   }
 
   private initializeControllers(controllers: Array<any>) {

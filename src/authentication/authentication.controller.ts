@@ -3,12 +3,14 @@ import * as express from 'express';
 import * as jwt from 'jsonwebtoken';
 import { getRepository } from 'typeorm';
 
-import Controller from '../interfaces/controller.interface'
-import UserModel from '../user/user.entity'
-import CreateUserDto from '../user/user.dto'
-import LogInDto from './login.dto'
-import TokenData from '../interfaces/tokenData.interface'
-import DataStoredInToken from '../interfaces/dataStoredInToken'
+import Controller from '../interfaces/controller.interface';
+import UserModel from '../user/user.entity';
+import CreateUserDto from '../user/user.dto';
+import LogInDto from './login.dto';
+import TokenData from '../interfaces/tokenData.interface';
+import DataStoredInToken from '../interfaces/dataStoredInToken';
+import WrongCredeitialsException from '../exceptions/WrongCredentialsException';
+import UserWithThatEmailAlreadyExistsExeption from '../exceptions/UserWithThatEmailAlreadyExistsExeption'
 
 class AuthenticationController implements Controller {
   public path = '/auth'
@@ -28,8 +30,7 @@ class AuthenticationController implements Controller {
   private registration = async(request: express.Request, response: express.Response, next: express.NextFunction) => {
     const userData: CreateUserDto = request.body
     if (await this.userRepository.findOne({ email: userData.email })) {
-      // TODO 後で例外処理に切り替える
-      throw Error('User is already existing')
+      next(new UserWithThatEmailAlreadyExistsExeption(userData.email))
     } else {
       const hashedPasword = await bcrypt.hash(userData.password, 10)
       const user = await this.userRepository.create({
@@ -55,11 +56,10 @@ class AuthenticationController implements Controller {
         response.setHeader('Set-Cookie', [this.createCookie(tokenData)])
         response.send(user)
       } else {
-        // TODO 後で例外処理に変える
-        throw Error('Wrong credeintials')
+        next(new WrongCredeitialsException())
       } 
     } else {
-      throw Error('Wrong credeitials')
+      next(new WrongCredeitialsException())
     }
   }
 
@@ -83,7 +83,6 @@ class AuthenticationController implements Controller {
       token: jwt.sign(dataStoredInToken, secret, { expiresIn })
     }
   }
-
 }
 
 export default AuthenticationController;

@@ -4,6 +4,8 @@ import { getRepository } from 'typeorm';
 import RequestWithUser from '../interfaces/requestWithUser.interface'
 import DataStoredInToken from '../interfaces/dataStoredInToken'
 import UserModel from '../user/user.entity'
+import WrongAuthenticationTokenException from '../exceptions/WrongAuthenticationTokenException'
+import AuthenticationTokenMissingExeption from '../exceptions/AuthenticationToeknMissingException'
 
 async function authMiddlleware(request: RequestWithUser, response: Response, next: NextFunction) {
   const cookies = request.cookies;
@@ -18,16 +20,13 @@ async function authMiddlleware(request: RequestWithUser, response: Response, nex
         request.user = user;
         next()
       } else {
-        // TODO 後で例外処理に変える
-        throw Error('WrongAuthenticationTokenException')
+        next(new WrongAuthenticationTokenException())
       }
     } catch (err) {
-        // TODO 後で例外処理に変える
-      throw Error('WrongAuthenticationTokenException')
+      next(new WrongAuthenticationTokenException())
     }
   } else {
-    // TODO 後で例外処理に変える
-    throw Error('AuthenticationTokenMissingExeption')
+    next(new AuthenticationTokenMissingExeption())
   }
 }
 
