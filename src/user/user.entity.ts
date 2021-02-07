@@ -5,7 +5,7 @@ import Post from '../posts/post.entity'
 @Entity()
 class User {
   @PrimaryGeneratedColumn()
-  public id?: string;
+  public id!: string;
 
   @Column()
   public name!: string

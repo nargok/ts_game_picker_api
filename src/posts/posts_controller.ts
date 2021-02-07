@@ -1,5 +1,6 @@
 import * as express from 'express'
 import { getRepository } from 'typeorm'
+import authMiddleware from '../middleware/auth.middleware'
 import CreatePostDto from './post.dto'
 import PostNotFoundException from '../exceptions/PostNotFoundException'
 import Controller from '../interfaces/controller.interface'
@@ -19,9 +20,11 @@ class PostsController implements Controller {
   public initializeRoutes() {
     this.router.get(this.path, this.getAllPosts)
     this.router.get(`${this.path}/:id`, this.getPostById)
-    this.router.post(this.path, this.createPost)
-    this.router.put(`${this.path}/:id`, this.modifyPost)
-    this.router.delete(`${this.path}/:id`, this.deletePost)
+    this.router
+      .all(`${this.path}/*`, authMiddleware)
+      .put(`${this.path}/:id`, this.modifyPost)
+      .delete(`${this.path}/:id`, this.deletePost)      
+      .post(this.path, authMiddleware, this.createPost)
   }
 
   private getAllPosts = async (request: express.Request, response: express.Response) => {
@@ -40,14 +43,13 @@ class PostsController implements Controller {
   }
 
   private createPost = async (request: RequestWithUser, response: express.Response) => {
-  // private createPost = async (request: express.Request, response: express.Response) => {
     const postData: CreatePostDto = request.body
     const newPost = this.postRepository.create({
       ...postData,
       author: request.user,
     })
     await this.postRepository.save(newPost)
-    // newPost.author = undefined;
+    newPost.author.password = '';
     response.send(newPost)
   }
 

@@ -21,6 +21,7 @@ class AuthenticationController implements Controller {
 
   private initializeRoutes() {
     this.router.post(`${this.path}/register`, this.registration)
+    this.router.post(`${this.path}/login`, this.loggingIn)
   }
 
   private registration = async(request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -49,6 +50,8 @@ class AuthenticationController implements Controller {
       const isPasswordMatching = await bcrypt.compare(logInData.password, user.password)
       if (isPasswordMatching) {
         user.password = ''
+        const tokenData = this.createToken(user)
+        response.setHeader('Set-Cookie', [this.createCookie(tokenData)])
         response.send(user)
       } else {
         // TODO 後で例外処理に変える
