@@ -1,5 +1,6 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import Address from '../adress/adress.entity'
+import Post from '../posts/post.entity'
 
 @Entity()
 class User {
@@ -13,7 +14,7 @@ class User {
   public email!: string
 
   @Column()
-  public poassword!: string
+  public password!: string
 
   @OneToOne(() => Address, (address: Address) => address.user, {
     cascade: true,
@@ -21,6 +22,9 @@ class User {
   })
   @JoinColumn()
   public address!: Address
+
+  @OneToMany(() => Post, (post: Post) => post.author)
+  public posts!: Post[];
 }
 
 export default User
