@@ -22,6 +22,7 @@ class AuthenticationController implements Controller {
   private initializeRoutes() {
     this.router.post(`${this.path}/register`, this.registration)
     this.router.post(`${this.path}/login`, this.loggingIn)
+    this.router.post(`${this.path}/logout`, this.loggingOut)
   }
 
   private registration = async(request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -60,6 +61,11 @@ class AuthenticationController implements Controller {
     } else {
       throw Error('Wrong credeitials')
     }
+  }
+
+  private loggingOut = (request: express.Request, response: express.Response) => {
+    response.setHeader('Set-Cookie', ['Authorization=;Max-age=0'])
+    response.sendStatus(200)
   }
 
   private createCookie(tokenData: TokenData) {
