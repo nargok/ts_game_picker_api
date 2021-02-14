@@ -10,7 +10,13 @@ const config: ConnectionOptions = {
   entities: [
     __dirname + '/../**/*.entity{.ts,.js}',
   ],
-  synchronize: true,
+  migrations: [
+    "src/migration/*.ts"
+  ],
+  cli: {
+    migrationsDir: 'src/migration'
+  }
+  // synchronize: true,
 }
 
 export default config;

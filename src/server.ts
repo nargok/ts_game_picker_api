@@ -8,7 +8,8 @@ import AuthenticationController from './authentication/authentication.controller
 
 (async () => {
   try {
-    const connections = await createConnection(config)
+    const connection = await createConnection(config);
+    await connection.runMigrations();
   } catch (e) {
     console.log('Error while connecting to the database', e)
     return e
