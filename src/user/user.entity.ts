@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import Address from '../adress/adress.entity'
 import Post from '../posts/post.entity'
+import Game from '../games/game.entity'
 
 @Entity()
 class User {
@@ -25,6 +26,9 @@ class User {
 
   @OneToMany(() => Post, (post: Post) => post.author)
   public posts!: Post[];
+
+  @OneToMany(() => Game, (game: Game) => game.author)
+  public games!: Game[];
 }
 
 export default User
