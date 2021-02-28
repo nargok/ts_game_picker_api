@@ -57,7 +57,7 @@ class AuthenticationController implements Controller {
         response.send(user)
       } else {
         next(new WrongCredeitialsException())
-      } 
+      }
     } else {
       next(new WrongCredeitialsException())
     }

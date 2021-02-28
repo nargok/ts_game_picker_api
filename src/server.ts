@@ -4,6 +4,7 @@ import { createConnection } from 'typeorm'
 import App from './app'
 import config from './ormconfig'
 import PostController from './posts/posts_controller'
+import GamesController from './games/games_controller'
 import AuthenticationController from './authentication/authentication.controller'
 
 (async () => {
@@ -17,6 +18,7 @@ import AuthenticationController from './authentication/authentication.controller
   const app: App = new App(
     [
       new PostController(),
+      new GamesController(), 
       new AuthenticationController(),
     ],
     Number(process.env.PORT) || 5000,

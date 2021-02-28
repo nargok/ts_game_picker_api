@@ -1,6 +1,7 @@
 import express from 'express';
 import errorMiddleware from './middleware/error.middleware'
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 class App {
   public app: express.Application;
@@ -18,6 +19,7 @@ class App {
   private initializeMiddleware() {
     this.app.use(express.json())
     this.app.use(cookieParser())
+    this.app.use(cors())
   }
 
   private initializeErrorHandling() {

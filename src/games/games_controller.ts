@@ -56,3 +56,5 @@ class GamesController implements Controller {
   }
 
 }
+
+export default GamesController;
