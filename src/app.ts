@@ -13,13 +13,17 @@ class App {
 
     this.initializeMiddleware();
     this.initializeControllers(controllers);
-    this.initializeErrorHandling();
+    // this.initializeErrorHandling(); // TODO ここに何かしらのエラーがあった..
   }
 
   private initializeMiddleware() {
     this.app.use(express.json())
     this.app.use(cookieParser())
-    this.app.use(cors())
+    this.app.use(cors({
+      origin: 'http://localhost:8081', //アクセス許可するオリジン
+      credentials: true, //レスポンスヘッダーにAccess-Control-Allow-Credentials追加
+      optionsSuccessStatus: 200 //レスポンスstatusを200に設定
+    }))
   }
 
   private initializeErrorHandling() {
