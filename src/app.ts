@@ -13,7 +13,7 @@ class App {
 
     this.initializeMiddleware();
     this.initializeControllers(controllers);
-    // this.initializeErrorHandling(); // TODO ここに何かしらのエラーがあった..
+    this.initializeErrorHandling();
   }
 
   private initializeMiddleware() {
