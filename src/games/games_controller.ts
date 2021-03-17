@@ -47,7 +47,7 @@ class GamesController implements Controller {
     const gameData: CreateGameDto = request.body;
     const newGame = this.gameRepository.create({
       ...gameData,
-      // author: request.user,
+      author: request.user,
     });
     await this.gameRepository.save(newGame);
     newGame.author.password = '';
