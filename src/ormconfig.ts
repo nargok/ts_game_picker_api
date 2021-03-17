@@ -17,6 +17,7 @@ const config: ConnectionOptions = {
     migrationsDir: 'src/migration'
   },
   // synchronize: true, // 初回起動だけ実行する
+  logging: true
 }
 
 export default config;

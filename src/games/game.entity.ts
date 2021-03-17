@@ -2,10 +2,10 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm'
 import User from '../user/user.entity'
 
-@Entity()
+@Entity({ name: 'games' })
 class Game {
   @PrimaryGeneratedColumn()
-  public id?: number;
+  public id!: number;
 
   @Column()
   public title!: string;
@@ -16,7 +16,7 @@ class Game {
   @Column()
   public price?: number;
 
-  @Column()
+  @Column({ nullable: true, type: 'text' })
   public memo?: string;
 
   @ManyToOne(() => User, (author: User) => author.games)

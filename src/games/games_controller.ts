@@ -18,7 +18,7 @@ class GamesController implements Controller {
     this.initializeRoutes()
   }
 
-  public initializeRoutes() {
+  private initializeRoutes() {
     this.router.get(this.path, this.getAllGames)
     this.router.get(`${this.path}/:id`, this.getGameById)
     this.router
@@ -26,7 +26,6 @@ class GamesController implements Controller {
     //   .put(`${this.path}/:id`, this.modifyPost)
     //   .delete(`${this.path}/:id`, this.deletePost)      
       .post(this.path, authMiddleware, this.createGame)
-
   }
 
   private getAllGames = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -48,11 +47,12 @@ class GamesController implements Controller {
     const gameData: CreateGameDto = request.body;
     const newGame = this.gameRepository.create({
       ...gameData,
-      author: request.user,
+      // author: request.user,
     });
     await this.gameRepository.save(newGame);
     newGame.author.password = '';
     response.send(newGame);
+    return
   }
 
 }

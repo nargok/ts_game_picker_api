@@ -18,8 +18,8 @@ import AuthenticationController from './authentication/authentication.controller
   const app: App = new App(
     [
       new PostController(),
-      new GamesController(), 
       new AuthenticationController(),
+      new GamesController(), 
     ],
     Number(process.env.PORT) || 5000,
   )
