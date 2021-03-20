@@ -8,12 +8,12 @@ import WrongAuthenticationTokenException from '../exceptions/WrongAuthentication
 import AuthenticationTokenMissingExeption from '../exceptions/AuthenticationToeknMissingException'
 
 async function authMiddlleware(request: RequestWithUser, response: Response, next: NextFunction) {
-  const cookies = request.cookies;
+  const headers = request.headers;
   const userRepository = getRepository(UserModel)
-  if (cookies && cookies.Authorization) {
+  if (headers && headers.authorization) {
     const secret = process.env.JWT_SECRET!
     try {
-      const verificationResponse = jwt.verify(cookies.Authorization, secret) as DataStoredInToken
+      const verificationResponse = jwt.verify(headers.authorization, secret) as DataStoredInToken
       const id = verificationResponse.id;
       const user = await userRepository.findOne(id)
       if (user) {
