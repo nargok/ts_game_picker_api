@@ -19,12 +19,11 @@ class GamesController implements Controller {
   }
 
   private initializeRoutes() {
-    this.router.get(this.path, this.getAllGames)
-    this.router.get(`${this.path}/:id`, this.getGameById)
+    this.router.get(this.path, authMiddleware, this.getAllGames) 
+    this.router.get(`${this.path}/:id`, authMiddleware, this.getGameById)
     this.router
-    //   .all(`${this.path}/*`, authMiddleware)
-    //   .put(`${this.path}/:id`, this.modifyPost)
-    //   .delete(`${this.path}/:id`, this.deletePost)      
+      .put(`${this.path}/:id`, authMiddleware, this.modifyGame)
+      .delete(`${this.path}/:id`, authMiddleware, this.deleteGame)
       .post(this.path, authMiddleware, this.createGame)
   }
 
@@ -53,6 +52,28 @@ class GamesController implements Controller {
     newGame.author.password = '';
     response.send(newGame);
     return
+  }
+
+  private modifyGame = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    const id = request.params.id
+    const gameData: Game = request.body
+    await this.gameRepository.update(id, gameData)
+    const updatedGame = await this.gameRepository.findOne(id)
+    if (updatedGame) {
+      response.send(updatedGame)
+    } else {
+      next(new GameNotFoundException(id));
+    }
+  }
+
+  private deleteGame = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    const id = request.params.id
+    const deleteResponse = await this.gameRepository.delete(id)
+    if (deleteResponse.affected === 1) {
+      response.sendStatus(200)
+    } else {
+      next(new GameNotFoundException(id));
+    }
   }
 
 }
